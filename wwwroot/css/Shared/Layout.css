@@ -48,3 +48,57 @@ main {
         font-size: 0.8rem !important;
     }
 }
+
+
+/* Nút Zalo nổi ở góc phải website */
+.zalo-float {
+    position: fixed;
+    right: 22px;
+    bottom: 25px;
+    z-index: 1050;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    background: #0068FF;
+    color: #fff;
+    text-decoration: none;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .zalo-float:hover {
+        color: #fff;
+        text-decoration: none;
+        transform: translateY(-4px);
+        box-shadow: 0 7px 20px rgba(0, 0, 0, 0.28);
+    }
+
+.zalo-chat-icon {
+    font-size: 25px;
+    line-height: 1;
+}
+
+.zalo-label {
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+@media (max-width: 576px) {
+    .zalo-float {
+        right: 14px;
+        bottom: 18px;
+        width: 56px;
+        height: 56px;
+    }
+
+    .zalo-chat-icon {
+        font-size: 22px;
+    }
+}

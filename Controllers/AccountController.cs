@@ -42,7 +42,7 @@ namespace BTL_LapTrinhWeb.Controllers
                 {
                     if (!user.TrangThai)
                     {
-                        string lockMsg = "Tài khoản của bạn đã bị khóa do vi phạm chính sách! Vui lòng liên hệ Hotline 0918.925.288.";
+                        string lockMsg = "Tài khoản của bạn đã bị khóa do vi phạm chính sách! Vui lòng liên hệ Hotline 0325.532.335.";
                         TempData["Error"] = lockMsg;
                         ViewBag.Error = lockMsg;
                         return View(model);
