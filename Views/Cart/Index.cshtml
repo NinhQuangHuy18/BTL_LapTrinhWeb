@@ -1,0 +1,336 @@
+﻿@model List<BTL_LapTrinhWeb.Models.ChiTietGioHang>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Giỏ hàng của bạn";
+
+    int tongSoLuong = Model?.Count ?? 0;
+    decimal tongTien = Model?.Sum(x => x.SanPham.GiaBan * x.SoLuong) ?? 0;
+    var activeCoupons = ViewBag.ActiveCoupons as List<BTL_LapTrinhWeb.Models.KhuyenMai>;
+}
+
+<style>
+    .cart-img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 4px;
+        background: #fff;
+    }
+
+    .qty-group {
+        width: 115px;
+    }
+
+    .qty-btn {
+        width: 32px;
+        padding: 4px 0;
+    }
+
+    .qty-input {
+        text-align: center;
+        font-weight: 600;
+        padding: 4px 2px;
+    }
+
+    .summary-card {
+        border-radius: 12px;
+        position: sticky;
+        top: 90px;
+    }
+
+    .coupon-badge {
+        cursor: pointer;
+        border: 1px dashed #dc3545;
+        background: #fff5f5;
+        color: #dc3545;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .coupon-badge:hover {
+        background: #dc3545;
+        color: #fff;
+    }
+</style>
+
+<div class="container my-4 mb-5">
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="row g-4" id="cartContainer">
+            <div class="col-12 col-lg-8">
+                <div class="card border shadow-sm rounded-3 overflow-hidden bg-white">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h5 class="m-0 fw-bold text-dark fs-6">
+                            <i class="fa-solid fa-cart-shopping text-danger me-2"></i>GIỎ HÀNG CỦA BẠN
+                        </h5>
+                        <form asp-action="ClearCart" asp-controller="Cart" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?');">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-regular fa-trash-can me-1"></i>Xóa tất cả
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card-body p-0">
+                        @foreach (var item in Model)
+                        {
+                            var sp = item.SanPham;
+                            var anhChinh = sp.HinhAnhSanPhams?.FirstOrDefault()?.DuongDanAnh
+                                           ?? "https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg";
+                            var thanhTien = sp.GiaBan * item.SoLuong;
+
+                            <div class="p-3 border-bottom cart-item-row" id="row-@sp.SanPhamId">
+                                <div class="row align-items-center g-3">
+
+                                    <div class="col-12 col-md-6 d-flex align-items-center gap-3">
+                                        <a href="/product-detail/@sp.Slug" class="flex-shrink-0">
+                                            <img src="@anhChinh"
+                                                 onerror="this.src='https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg'"
+                                                 alt="@sp.TenSanPham"
+                                                 class="cart-img" />
+                                        </a>
+                                        <div>
+                                            <a href="/product-detail/@sp.Slug" class="text-decoration-none text-dark fw-semibold d-block mb-1" style="line-height: 1.3;">
+                                                @sp.TenSanPham
+                                            </a>
+                                            <small class="text-muted d-block">
+                                                Mã SP: <strong>@sp.MaSanPham</strong> | Kho còn: <strong class="text-success">@sp.SoLuongTon</strong>
+                                            </small>
+
+                                            <div class="mt-1">
+                                                <span class="text-danger fw-bold small">@sp.GiaBan.ToString("N0")₫</span>
+                                                @if (sp.GiaNiemYet > sp.GiaBan)
+                                                {
+                                                    <span class="text-muted text-decoration-line-through ms-1" style="font-size: 0.75rem;">
+                                                        @Convert.ToDecimal(sp.GiaNiemYet).ToString("N0")₫
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-md-3 d-flex justify-content-start justify-content-md-center">
+                                        <div class="input-group qty-group">
+                                            <button type="button" class="btn btn-outline-secondary qty-btn" onclick="changeQuantity(@sp.SanPhamId, -1)">
+                                                <i class="fa-solid fa-minus" style="font-size: 11px;"></i>
+                                            </button>
+                                            <input type="number"
+                                                   id="qty-@sp.SanPhamId"
+                                                   class="form-control border-secondary qty-input"
+                                                   value="@item.SoLuong"
+                                                   min="1"
+                                                   max="@sp.SoLuongTon"
+                                                   readonly />
+                                            <button type="button" class="btn btn-outline-secondary qty-btn" onclick="changeQuantity(@sp.SanPhamId, 1)">
+                                                <i class="fa-solid fa-plus" style="font-size: 11px;"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 col-md-3 d-flex align-items-center justify-content-end gap-3">
+                                        <div class="text-end">
+                                            <small class="text-muted d-block d-md-none" style="font-size: 11px;">Thành tiền:</small>
+                                            <span class="fw-bold text-danger fs-6" id="subtotal-@sp.SanPhamId">
+                                                @thanhTien.ToString("N0")₫
+                                            </span>
+                                        </div>
+                                        <button type="button"
+                                                class="btn btn-sm btn-light text-secondary border hover-danger"
+                                                title="Xóa sản phẩm"
+                                                onclick="removeCartItem(@sp.SanPhamId)">
+                                            <i class="fa-regular fa-trash-can text-danger"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="/Home" class="text-decoration-none text-danger fw-semibold small">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Tiếp tục chọn thêm sản phẩm khác
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="card border shadow-sm summary-card bg-white">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="m-0 fw-bold text-dark fs-6">THÔNG TIN ĐƠN HÀNG</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-semibold">Mã khuyến mãi (Nếu có)</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="cartCouponInput" class="form-control" placeholder="Nhập mã giảm giá (VD: WELCOME5)">
+                                <button class="btn btn-outline-danger fw-semibold px-3" type="button" onclick="applyCartCoupon()">Áp dụng</button>
+                            </div>
+                            <small id="cartCouponMessage" class="d-block mt-1"></small>
+
+                            @if (activeCoupons != null && activeCoupons.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-1 mt-2">
+                                    @foreach (var km in activeCoupons)
+                                    {
+                                        <span class="coupon-badge" onclick="pickCartCoupon('@km.MaKhuyenMai')" title="@km.TenKhuyenMai (Đơn tối thiểu @km.DonHangToiThieu.ToString("N0")₫)">
+                                            <i class="fa-solid fa-tag me-1"></i>@km.MaKhuyenMai
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <hr class="text-muted">
+
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Tạm tính (<span id="summaryCount">@tongSoLuong</span> sản phẩm):</span>
+                            <strong id="subTotalOrder">@tongTien.ToString("N0")₫</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Giảm giá khuyến mãi:</span>
+                            <strong class="text-success" id="discountOrder">-0₫</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 small">
+                            <span class="text-muted">Phí vận chuyển:</span>
+                            <span class="text-success fw-semibold">Miễn phí nội thành</span>
+                        </div>
+
+                        <hr class="text-muted">
+
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-dark">TỔNG CỘNG:</span>
+                            <span class="fw-bold text-danger fs-4" id="totalOrder">@tongTien.ToString("N0")₫</span>
+                        </div>
+                        <small class="text-muted d-block text-end mb-3" style="font-size: 11px;">(Đã bao gồm VAT nếu có)</small>
+
+                        <a href="/Checkout" id="btnProceedCheckout" class="btn btn-danger w-100 py-2 fw-bold text-uppercase shadow-sm">
+                            <i class="fa-solid fa-bag-shopping me-2"></i>MUA NGAY / ĐẶT HÀNG
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div id="emptyCartMessage" class="text-center py-5 bg-white rounded-3 shadow-sm border @(Model != null && Model.Count > 0 ? "d-none" : "")">
+        <i class="fa-solid fa-cart-arrow-down text-danger opacity-50 mb-3" style="font-size: 4rem;"></i>
+        <h5 class="fw-bold text-dark">Giỏ hàng của bạn đang trống!</h5>
+        <p class="text-muted small mb-4">Hãy chọn thêm các sản phẩm điều hòa, tủ lạnh, máy giặt với giá ưu đãi tại kho.</p>
+        <a href="/Home" class="btn btn-danger px-4 py-2 fw-semibold">
+            <i class="fa-solid fa-cart-plus me-2"></i>Quay lại mua sắm ngay
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentAppliedCoupon = "";
+
+        function pickCartCoupon(code) {
+            document.getElementById('cartCouponInput').value = code;
+            applyCartCoupon();
+        }
+
+        function applyCartCoupon() {
+            const inputEl = document.getElementById('cartCouponInput');
+            const msgEl = document.getElementById('cartCouponMessage');
+            const discountEl = document.getElementById('discountOrder');
+            const totalEl = document.getElementById('totalOrder');
+            const checkoutBtn = document.getElementById('btnProceedCheckout');
+
+            const code = inputEl.value.trim();
+
+            fetch(`/Checkout/ApplyCoupon?code=${encodeURIComponent(code)}`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    currentAppliedCoupon = data.code;
+                    inputEl.value = data.code;
+                    msgEl.className = "d-block mt-1 text-success fw-semibold";
+                    msgEl.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i>${data.message}`;
+
+                    discountEl.innerText = `-${Number(data.giamGia).toLocaleString('vi-VN')}₫`;
+                    totalEl.innerText = `${Number(data.tongThanhToan).toLocaleString('vi-VN')}₫`;
+
+                    checkoutBtn.href = `/Checkout?coupon=${encodeURIComponent(data.code)}`;
+                } else {
+                    currentAppliedCoupon = "";
+                    msgEl.className = "d-block mt-1 text-danger fw-semibold";
+                    msgEl.innerHTML = `<i class="fa-solid fa-circle-exclamation me-1"></i>${data.message}`;
+
+                    discountEl.innerText = "-0₫";
+                    if (data.tongThanhToan !== undefined) {
+                        totalEl.innerText = `${Number(data.tongThanhToan).toLocaleString('vi-VN')}₫`;
+                    }
+                    checkoutBtn.href = "/Checkout";
+                }
+            });
+        }
+
+        function changeQuantity(sanPhamId, delta) {
+            const input = document.getElementById('qty-' + sanPhamId);
+            let currentQty = parseInt(input.value) || 1;
+            let newQty = currentQty + delta;
+
+            if (newQty <= 0) {
+                removeCartItem(sanPhamId);
+                return;
+            }
+
+            updateCartServer(sanPhamId, newQty);
+        }
+
+        function removeCartItem(sanPhamId) {
+            if (!confirm('Bạn muốn xóa sản phẩm này khỏi giỏ hàng?')) return;
+            updateCartServer(sanPhamId, 0);
+        }
+
+        function updateCartServer(sanPhamId, quantity) {
+            fetch(`/Cart/UpdateQuantity?sanPhamId=${sanPhamId}&quantity=${quantity}`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (quantity <= 0) {
+                        const row = document.getElementById('row-' + sanPhamId);
+                        if (row) row.remove();
+                    } else {
+                        document.getElementById('qty-' + sanPhamId).value = quantity;
+                        document.getElementById('subtotal-' + sanPhamId).innerText = data.itemSubtotal;
+                    }
+
+                    document.getElementById('subTotalOrder').innerText = data.cartTotal;
+                    document.getElementById('totalOrder').innerText = data.cartTotal;
+                    document.getElementById('summaryCount').innerText = data.cartCount;
+
+                    const breadcrumbEl = document.getElementById('breadcrumbCount');
+                    if (breadcrumbEl) breadcrumbEl.innerText = data.cartCount;
+
+                    const badge = document.getElementById('cartBadge');
+                    if (badge) badge.innerText = data.cartCount;
+
+                    if (data.cartCount === 0) {
+                        const cartContainer = document.getElementById('cartContainer');
+                        if (cartContainer) cartContainer.classList.add('d-none');
+                        document.getElementById('emptyCartMessage').classList.remove('d-none');
+                    } else if (currentAppliedCoupon !== "") {
+                        applyCartCoupon();
+                    }
+                } else {
+                    alert(data.message || "Số lượng vượt quá tồn kho!");
+                    if (data.maxStock !== undefined) {
+                        document.getElementById('qty-' + sanPhamId).value = data.maxStock;
+                    }
+                }
+            });
+        }
+    </script>
+}

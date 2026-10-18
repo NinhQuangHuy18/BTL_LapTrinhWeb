@@ -1,0 +1,62 @@
+﻿@model BTL_LapTrinhWeb.Models.LoginViewModel
+@{
+    Layout = null;
+    string? errorMsg = TempData["Error"] as string ?? ViewBag.Error as string;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Điện Lạnh Huy Sơn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Account/Login.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <a href="/Home" class="brand"><i class="fa-solid fa-snowflake"></i> ĐIỆN LẠNH HUY SƠN</a>
+            <h2>Chào mừng trở lại!</h2>
+            <p>Vui lòng đăng nhập để tiếp tục</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMsg))
+        {
+            <div class="alert-box alert-error">
+                <i class="fa-solid fa-circle-exclamation me-1"></i> @errorMsg
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert-box alert-success">
+                <i class="fa-solid fa-circle-check me-1"></i> @TempData["Success"]
+            </div>
+        }
+
+        <form asp-action="Login" asp-controller="Account" method="post">
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input asp-for="Email" type="email" placeholder="Nhập Email của bạn" required>
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input asp-for="Password" type="password" placeholder="Nhập Mật khẩu" required>
+            </div>
+            <div class="form-actions">
+                <label style="cursor: pointer;">
+                    <input type="checkbox" name="remember" checked> Ghi nhớ đăng nhập
+                </label>
+                <a href="/Home" style="color: #6c757d; text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Về trang chủ
+                </a>
+            </div>
+            <button type="submit" class="btn-submit">ĐĂNG NHẬP</button>
+
+            <div class="register-link">
+                <p>Chưa có tài khoản? <a href="/Account/Register">Đăng ký ngay</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

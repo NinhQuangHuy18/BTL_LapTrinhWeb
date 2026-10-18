@@ -1,0 +1,165 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Bảng giá vật tư & Lắp đặt";
+}
+
+<style>
+    .price-card {
+        border-radius: 14px;
+        border: 1px solid #eaeaea;
+    }
+
+    .custom-price-table th {
+        background-color: #212529;
+        color: #ffffff;
+        border-color: #373b3e;
+        padding: 12px 10px;
+        font-size: 0.9rem;
+    }
+
+    .custom-price-table td {
+        padding: 10px 12px;
+        font-size: 0.92rem;
+    }
+
+    .custom-price-table tbody tr:hover:not(.group-header) {
+        background-color: #fff5f5 !important;
+    }
+
+    .group-header td {
+        background-color: #f8d7da !important;
+        color: #842029;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.88rem;
+        letter-spacing: 0.3px;
+    }
+
+    @@media (max-width: 575.98px) {
+        .custom-price-table th,
+        .custom-price-table td {
+            padding: 8px 6px;
+            font-size: 0.82rem;
+        }
+
+        .price-header-title {
+            font-size: 1.05rem !important;
+        }
+    }
+</style>
+
+<div class="container my-4 mb-5">
+    <div class="card price-card shadow-sm overflow-hidden bg-white">
+        <div class="card-header bg-danger text-white py-3 px-3 px-md-4">
+            <div class="row align-items-center g-2">
+                <div class="col-12 col-md-7 text-center text-md-start">
+                    <h4 class="fw-bold mb-0 text-uppercase price-header-title">
+                        <i class="fa-solid fa-screwdriver-wrench me-2"></i>BẢNG GIÁ VẬT TƯ & CÔNG LẮP ĐẶT
+                    </h4>
+                </div>
+                <div class="col-12 col-md-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-0 text-danger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="priceSearchInput" class="form-control border-0" placeholder="Tìm nhanh: ống đồng, dây điện, vệ sinh, nạp gas..." onkeyup="filterPriceTable()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle mb-0 custom-price-table" id="priceTable">
+                    <thead>
+                        <tr class="text-center fw-bold text-uppercase">
+                            <th style="width: 60px;">STT</th>
+                            <th>Chi tiết vật tư thiết bị, công lắp đặt</th>
+                            <th style="width: 90px;">ĐVT</th>
+                            <th style="width: 140px;">Đơn giá (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="group-header">
+                            <td colspan="4"><i class="fa-solid fa-bolt me-2"></i>I. Nhân công lắp đặt máy điều hòa</td>
+                        </tr>
+                        <tr><td class="text-center">1</td><td>Công lắp đặt điều hòa Ga R32, R410 (&lt;= 18.000 BTU)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">300,000 ₫</td></tr>
+                        <tr><td class="text-center">2</td><td>Công lắp đặt điều hòa Ga R32, R410 (&gt;= 24.000 BTU)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">400,000 ₫</td></tr>
+                        <tr><td class="text-center">3</td><td>Công lắp đặt máy điều hòa 30.000 BTU (Multi, treo tường)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">450,000 ₫</td></tr>
+                        <tr><td class="text-center">4</td><td>Công lắp đặt máy điều hòa Tủ đứng, Cassette công suất dưới 30.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">550,000 ₫</td></tr>
+                        <tr><td class="text-center">5</td><td>Công lắp đặt điều hòa Tủ đứng, Cassette công suất trên 30.000 BTU - &lt; 48.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">650,000 ₫</td></tr>
+                        <tr><td class="text-center">6</td><td>Công lắp đặt điều hòa Tủ đứng, Cassette công suất lớn hơn 48.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">850,000 ₫</td></tr>
+                        <tr><td class="text-center">7</td><td>Công lắp đặt điều hòa Multi hệ treo tường - Dàn nóng</td><td class="text-center">Cục</td><td class="text-end fw-bold text-danger text-nowrap">400,000 ₫</td></tr>
+                        <tr><td class="text-center">8</td><td>Công lắp đặt điều hòa Multi hệ treo tường - Dàn lạnh</td><td class="text-center">Cục</td><td class="text-end fw-bold text-danger text-nowrap">300,000 ₫</td></tr>
+                        <tr><td class="text-center">9</td><td>Công lắp đặt điều hòa Multi hệ Cassette - Dàn nóng</td><td class="text-center">Cục</td><td class="text-end fw-bold text-danger text-nowrap">850,000 ₫</td></tr>
+                        <tr><td class="text-center">10</td><td>Công lắp đặt điều hòa Multi hệ Cassette - Dàn lạnh</td><td class="text-center">Cục</td><td class="text-end fw-bold text-danger text-nowrap">500,000 ₫</td></tr>
+
+                        <tr class="group-header">
+                            <td colspan="4"><i class="fa-solid fa-toolbox me-2"></i>II. Vật tư ống đồng, giá đỡ, dây điện & phụ kiện</td>
+                        </tr>
+                        <tr><td class="text-center">11</td><td>Ống đồng bảo ôn máy 9.000 BTU (Dày 0.71mm)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">220,000 ₫</td></tr>
+                        <tr><td class="text-center">12</td><td>Ống đồng bảo ôn máy 12.000 BTU (Dày 0.71mm)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">220,000 ₫</td></tr>
+                        <tr><td class="text-center">13</td><td>Ống đồng bảo ôn máy 18.000 - 24.000 BTU (Dày 0.71mm)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">280,000 ₫</td></tr>
+                        <tr><td class="text-center">14</td><td>Ống đồng bảo ôn máy &gt;= 24.000 BTU (Dày 0.71mm, Phi 16)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">320,000 ₫</td></tr>
+                        <tr><td class="text-center">15</td><td>Ống đồng bảo ôn máy &gt; 24.000 BTU (Dày 0.71mm, Phi 19)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">360,000 ₫</td></tr>
+                        <tr><td class="text-center">16</td><td>Giá đỡ cục nóng cho máy 9.000 - 12.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">100,000 ₫</td></tr>
+                        <tr><td class="text-center">17</td><td>Giá đỡ cục nóng cho máy 18.000 - &lt; 20.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">120,000 ₫</td></tr>
+                        <tr><td class="text-center">18</td><td>Giá đỡ cục nóng cho máy trên 24.000 BTU (treo tường)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                        <tr><td class="text-center">19</td><td>Vật tư phụ (đai, ốc, vít, cút, băng dính)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">40,000 ₫</td></tr>
+                        <tr><td class="text-center">20</td><td>Vải bọc bảo ôn (1 mét ống = 1 mét vải bọc)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">8,000 ₫</td></tr>
+                        <tr><td class="text-center">21</td><td>Ống nước thải (ống chun)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">8,000 ₫</td></tr>
+                        <tr><td class="text-center">22</td><td>Aptomat (Automat) 30A 2 cực</td><td class="text-center">Chiếc</td><td class="text-end fw-bold text-danger text-nowrap">100,000 ₫</td></tr>
+                        <tr><td class="text-center">23</td><td>Dây điện 2 × 2.5 (CADISUN)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">30,000 ₫</td></tr>
+                        <tr><td class="text-center">24</td><td>Dây điện 2 × 2.5 (CADIVI - Vcmo)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">35,000 ₫</td></tr>
+                        <tr><td class="text-center">25</td><td>Dây điện 2 × 4 (CADIVI - Vcmo)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">42,000 ₫</td></tr>
+
+                        <tr class="group-header">
+                            <td colspan="4"><i class="fa-solid fa-gears me-2"></i>III. Công tháo dỡ, vệ sinh bảo dưỡng & thi công phát sinh</td>
+                        </tr>
+                        <tr><td class="text-center">26</td><td>Công tháo dỡ máy điều hòa cũ công suất nhỏ hơn 24.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                        <tr><td class="text-center">27</td><td>Công tháo dỡ máy điều hòa cũ công suất 28.000 - 48.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">250,000 ₫</td></tr>
+                        <tr><td class="text-center">28</td><td>Công đục tường treo ống bảo ôn (Không bao gồm trát và sơn tường)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">40,000 ₫</td></tr>
+                        <tr><td class="text-center">29</td><td>Công đục tường chôn ống thoát nước, dây điện (Không bao gồm trát và sơn tường)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">60,000 ₫</td></tr>
+                        <tr><td class="text-center">30</td><td>Công đi ống trên trần thạch cao, trần thả (Không bao gồm trát và sơn tường)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">40,000 ₫</td></tr>
+                        <tr><td class="text-center">31</td><td>Công lắp đặt phát sinh trong trường hợp phải hàn ống đồng (Mối hàn)</td><td class="text-center">Mối</td><td class="text-end fw-bold text-danger text-nowrap">50,000 ₫</td></tr>
+                        <tr><td class="text-center">32</td><td>Công kiểm tra và vệ sinh đường ống có sẵn tại nhà khách (Phương pháp thổi Nitơ đuổi Gas)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">150,000 ₫</td></tr>
+                        <tr><td class="text-center">33</td><td>Công kiểm tra và vệ sinh đường ống có sẵn tại nhà khách (Thổi Nitơ đuổi Gas) - <i>Áp dụng chi nhánh Đà Nẵng</i></td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                        <tr><td class="text-center">34</td><td>Công lắp đặt phát sinh khi dùng thang dây, giàn giáo (Khách tự thuê và trả chi phí giàn giáo)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                        <tr><td class="text-center">35</td><td>Công lắp đặt phát sinh khi dùng thang dây (Đã bao gồm thang dây)</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">400,000 ₫</td></tr>
+                        <tr><td class="text-center">36</td><td>Công vệ sinh bảo dưỡng máy điều hoà treo tường &lt; 24.000 BTU</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                        <tr><td class="text-center">37</td><td>Công vệ sinh bảo dưỡng máy điều hoà Tủ đứng</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">350,000 ₫</td></tr>
+                        <tr><td class="text-center">38</td><td>Công vệ sinh bảo dưỡng máy điều hoà Cassette, Âm trần</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">500,000 ₫</td></tr>
+                        <tr><td class="text-center">39</td><td>Nạp Gas toàn bộ cho máy không còn Gas</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">400,000 ₫</td></tr>
+                        <tr><td class="text-center">40</td><td>Nạp Gas bổ sung trong trường hợp đường ống dài vượt tiêu chuẩn 10m</td><td class="text-center">Bộ</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                        <tr><td class="text-center">41</td><td>Công đi dây ống đồng (Đối với khách hàng tự mua vật tư)</td><td class="text-center">Mét</td><td class="text-end fw-bold text-danger text-nowrap">50,000 ₫</td></tr>
+                        <tr><td class="text-center">42</td><td>Khoan rút lõi tường gạch / bê tông</td><td class="text-center">Lần</td><td class="text-end fw-bold text-danger text-nowrap">200,000 ₫</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light p-3 p-md-4 text-secondary small border-top">
+            <p class="mb-2 text-dark"><i class="fa-solid fa-circle-info text-danger me-2"></i><strong>Lưu ý & Cam kết dịch vụ tại Điện Lạnh Huy Sơn:</strong></p>
+            <ul class="mb-0 ps-3" style="line-height: 1.7;">
+                <li>Kỹ thuật viên khảo sát và báo đúng đơn giá niêm yết trên website trước khi tiến hành lắp đặt, nghiệm thu thực tế dùng bao nhiêu tính bấy nhiêu.</li>
+                <li>Các phát sinh ngoài danh mục trên (nếu có) sẽ được khảo sát thực tế và thống nhất với khách hàng trước khi thi công.</li>
+                <li>Đối với vị trí lắp đặt địa hình khó thi công phải thuê giàn giáo hoặc thiết bị nâng hạ đặc biệt, khách hàng thanh toán chi phí thuê theo thực tế.</li>
+                <li>Mọi thắc mắc về kỹ thuật và báo giá lắp đặt, Quý khách vui lòng liên hệ trực tiếp Hotline: <strong class="text-danger fs-6">0918.925.288</strong>.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterPriceTable() {
+            const keyword = document.getElementById('priceSearchInput').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#priceTable tbody tr:not(.group-header)');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(keyword) ? '' : 'none';
+            });
+        }
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@model List<BTL_LapTrinhWeb.Models.NguoiDung>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý nhân sự (Staff & Admin)";
+}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-4">
+        <div class="card stat-card bg-white p-3 p-md-4">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="fa-solid fa-user-plus text-danger me-2"></i>CẤP TÀI KHOẢN NHÂN VIÊN MỚI
+            </h6>
+            <form asp-action="CreateStaff" asp-controller="Admin" method="post">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Họ và tên nhân viên <span class="text-danger">*</span></label>
+                    <input type="text" name="hoTen" class="form-control form-control-sm" placeholder="VD: Nguyễn Văn Hùng" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email đăng nhập <span class="text-danger">*</span></label>
+                    <input type="email" name="email" class="form-control form-control-sm" placeholder="VD: staff2@dienlanhhuyson.vn" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Số điện thoại</label>
+                    <input type="tel" name="soDienThoai" class="form-control form-control-sm" placeholder="Nhập SĐT" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Mật khẩu khởi tạo <span class="text-danger">*</span></label>
+                    <input type="text" name="matKhau" class="form-control form-control-sm" value="123456" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Phân quyền (Role)</label>
+                    <select name="vaiTro" class="form-select form-select-sm">
+                        <option value="Staff">Staff (Nhân viên vận hành)</option>
+                        <option value="Admin">Admin (Quản trị toàn quyền)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger w-100 fw-bold btn-sm py-2">
+                    <i class="fa-solid fa-plus me-1"></i>Tạo tài khoản nhân sự
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="card stat-card bg-white p-3 p-md-4">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="fa-solid fa-user-shield text-danger me-2"></i>DANH SÁCH BAN QUẢN TRỊ & NHÂN VIÊN
+            </h6>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle small mb-0">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-nowrap">
+                        @foreach (var s in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@s.HoTen</td>
+                                <td>@s.Email</td>
+                                <td>
+                                    @if (s.VaiTro == "Admin")
+                                    {
+                                        <span class="badge bg-danger">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">Staff</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge @(s.TrangThai ? "bg-success" : "bg-secondary")">
+                                        @(s.TrangThai ? "Hoạt động" : "Đã khóa")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="ToggleUserStatus" asp-controller="Admin" method="post" class="d-inline">
+                                        <input type="hidden" name="nguoiDungId" value="@s.NguoiDungId" />
+                                        <input type="hidden" name="returnUrl" value="Staffs" />
+                                        <button type="submit" class="btn btn-sm @(s.TrangThai ? "btn-outline-danger" : "btn-success")">
+                                            <i class="fa-solid @(s.TrangThai ? "fa-lock" : "fa-lock-open") me-1"></i>
+                                            @(s.TrangThai ? "Khóa" : "Mở khóa")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Điện Lạnh Huy Sơn</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BTL_LapTrinhWeb.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Shared/Layout.css" asp-append-version="true" />
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+    {
+        <style>
+            /* Ẩn các nút mua hàng đối với tài khoản Admin & Staff */
+            a[href*="/mua-ngay"],
+            button[onclick*="addToCart"],
+            .product-card .btn-outline-danger {
+                display: none !important;
+            }
+
+            .product-card .btn-outline-secondary {
+                width: 100% !important;
+            }
+        </style>
+    }
+</head>
+
+<body>
+    <div class="top-bar bg-danger text-white py-1">
+        <div class="container d-flex flex-wrap justify-content-center justify-content-md-between align-items-center gap-1">
+            <div class="d-none d-sm-block small">
+                <i class="fa-solid fa-truck-fast me-1"></i> Cam kết giá tại kho - Giao hàng & Lắp đặt nhanh chóng!
+            </div>
+            <div class="small text-center">
+                <span class="me-3"><i class="fa-solid fa-phone-volume me-1"></i> Hotline: <strong>0918.925.288</strong></span>
+                <span class="d-none d-md-inline"><i class="fa-solid fa-clock me-1"></i> Giờ làm việc: 8:00 - 20:00</span>
+            </div>
+        </div>
+    </div>
+
+    <header class="py-2 py-lg-3 bg-white border-bottom shadow-sm sticky-top">
+        <div class="container">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+                <a href="/Home" class="navbar-brand text-danger fw-bold fs-3 m-0 order-1">
+                    <i class="fa-solid fa-snowflake"></i> HuySơn
+                    <span class="d-block text-muted fw-normal" style="font-size: 0.75rem;">Điện Lạnh Giá Tại Kho</span>
+                </a>
+
+                <div class="d-flex align-items-center gap-2 order-2 order-lg-3">
+
+                    <div class="d-none d-xl-flex align-items-center text-danger me-2">
+                        <i class="fa-solid fa-headset fs-2 me-2"></i>
+                        <div>
+                            <small class="d-block text-dark" style="font-size: 0.75rem;">Tư vấn bán hàng</small>
+                            <strong class="fs-5">0918.925.288</strong>
+                        </div>
+                    </div>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <div class="d-flex align-items-center gap-1 gap-sm-2">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                            {
+                                <a href="/Admin" class="btn btn-warning d-flex align-items-center gap-1 fw-bold text-dark py-1 px-2 px-sm-3 shadow-sm" title="Vào trang Quản trị hệ thống">
+                                    <i class="fa-solid fa-gauge-high"></i>
+                                    <span class="d-none d-sm-inline small">Quản trị</span>
+                                </a>
+                            }
+
+                            <a href="/Account/Profile" class="btn btn-outline-success d-flex align-items-center gap-2 text-dark text-decoration-none border py-1 px-2 px-sm-3">
+                                <i class="fa-solid fa-circle-user fs-5 text-success"></i>
+                                <div class="text-start d-none d-md-block">
+                                    <small class="d-block text-muted" style="font-size: 10px; line-height: 1.1;">
+                                        @(User.IsInRole("Admin") ? "Quản trị viên" : User.IsInRole("Staff") ? "Nhân viên" : "Xin chào,")
+                                    </small>
+                                    <strong class="small text-truncate d-block" style="max-width: 110px;">@User.Identity.Name</strong>
+                                </div>
+                            </a>
+
+                            <a href="/Account/Logout" class="btn btn-outline-secondary py-1 px-2" title="Đăng xuất">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="/Account/Login" class="btn btn-outline-secondary d-flex align-items-center gap-2 text-dark text-decoration-none border py-1 px-2 px-sm-3">
+                            <i class="fa-solid fa-user fs-5 text-danger"></i>
+                            <div class="text-start d-none d-md-block">
+                                <small class="d-block text-muted" style="font-size: 10px; line-height: 1.1;">Đăng nhập</small>
+                                <strong class="small">Tài khoản</strong>
+                            </div>
+                        </a>
+                    }
+
+                    @if (!User.IsInRole("Admin") && !User.IsInRole("Staff"))
+                    {
+                        <a href="/Cart" class="btn btn-outline-danger position-relative py-1 px-2 px-sm-3" title="Giỏ hàng">
+                            <i class="fa-solid fa-cart-shopping fs-5"></i>
+                            <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                0
+                            </span>
+                        </a>
+                    }
+                </div>
+
+                <div class="search-box order-3 order-lg-2 mt-2 mt-lg-0">
+                    <form class="d-flex" action="/Product/Search" method="get">
+                        <input class="form-control me-2 py-2 border-danger"
+                               type="search"
+                               name="keyword"
+                               value="@Context.Request.Query["keyword"]"
+                               placeholder="Nhập tên sản phẩm hoặc mã Model (VD: FTKY25, Daikin...)"
+                               aria-label="Search">
+                        <button class="btn btn-danger px-3 px-sm-4" type="submit">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    @if (ViewData["HideMainNav"] == null)
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-1 py-lg-2">
+            <div class="container">
+                <span class="navbar-brand d-lg-none fs-6 fw-bold text-white-50">
+                    Danh mục sản phẩm
+                </span>
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold flex-wrap">
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase @(currentController == "Home" && currentAction == "Index" ? "active" : "")" href="/Home">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase @(currentController == "Product" && currentAction == "AirConditioner" ? "active" : "")" href="/Product/AirConditioner">Điều hòa không khí</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase @(currentController == "Product" && currentAction == "Refrigerator" ? "active" : "")" href="/Product/Refrigerator">Tủ lạnh</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase @(currentController == "Product" && currentAction == "WashingMachine" ? "active" : "")" href="/Product/WashingMachine">Máy giặt</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase @(currentController == "Product" && currentAction == "WaterHeater" ? "active" : "")" href="/Product/WaterHeater">Bình nóng lạnh</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase @(currentController == "Home" && currentAction == "TechnicalAdvice" ? "active" : "")" href="/Home/TechnicalAdvice">Tư vấn kỹ thuật</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase text-warning @(currentController == "Home" && currentAction == "PriceList" ? "active" : "")" href="/Home/PriceList">Bảng giá vật tư & Lắp đặt</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    }
+
+    <div class="container py-3">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="bg-dark text-white pt-4 pb-3 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <h5 class="text-danger fw-bold">CÔNG TY ĐIỆN LẠNH HUY SƠN</h5>
+                    <p class="small text-light">Chuyên phân phối các sản phẩm điện lạnh chính hãng Daikin, Panasonic, Casper, LG, Samsung, Ariston... với giá niêm yết tại kho tốt nhất thị trường.</p>
+                    <p class="small mb-1"><i class="fa-solid fa-location-dot text-danger me-2"></i>Địa chỉ kho hàng: Hà Nội & TP. Hồ Chí Minh</p>
+                    <p class="small mb-1"><i class="fa-solid fa-phone text-danger me-2"></i>Hotline: 0918.925.288</p>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3">
+                    <h6 class="fw-bold border-bottom border-secondary pb-2">DANH MỤC SẢN PHẨM</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-1">
+                        <li><a href="/Product/AirConditioner" class="text-white-50 text-decoration-none">Điều hòa không khí</a></li>
+                        <li><a href="/Product/Refrigerator" class="text-white-50 text-decoration-none">Tủ lạnh chính hãng</a></li>
+                        <li><a href="/Product/WashingMachine" class="text-white-50 text-decoration-none">Máy giặt lồng ngang</a></li>
+                        <li><a href="/Product/WaterHeater" class="text-white-50 text-decoration-none">Bình nóng lạnh</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-6 col-lg-2">
+                    <h6 class="fw-bold border-bottom border-secondary pb-2">HỖ TRỢ KHÁCH HÀNG</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-1">
+                        <li><a href="/Home/TechnicalAdvice" class="text-white-50 text-decoration-none">Tư vấn chọn công suất</a></li>
+                        <li><a href="/Home/PriceList" class="text-white-50 text-decoration-none">Bảng giá vật tư lắp đặt</a></li>
+                        <li><a href="/Account/Profile" class="text-white-50 text-decoration-none">Tra cứu đơn hàng</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold border-bottom border-secondary pb-2">TỔNG ĐÀI HỖ TRỢ</h6>
+                    <div class="p-3 border border-secondary rounded bg-black bg-opacity-25">
+                        <small class="d-block text-white-50">Tư vấn bán hàng (8:00 - 20:00):</small>
+                        <strong class="text-warning fs-4">0918.925.288</strong>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-secondary mt-4">
+            <div class="text-center small text-white-50">
+                &copy; 2026 Dienlanhhuyson.com.vn - Bảo lưu mọi quyền.
+            </div>
+        </div>
+    </footer>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+        <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-semibold">
+                    <i class="fa-solid fa-circle-check me-2"></i><span id="cartToastMsg">Đã thêm vào giỏ hàng!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                fetch('/Cart/GetCartCount')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.count !== undefined) {
+                            badge.innerText = data.count;
+                        }
+                    })
+                    .catch(() => {});
+            }
+        });
+
+        function addToCart(sanPhamId, quantity = 1) {
+            fetch(`/Cart/AddToCart?sanPhamId=${sanPhamId}&quantity=${quantity}`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.requireLogin) {
+                    alert(data.message);
+                    window.location.href = '/Account/Login';
+                    return;
+                }
+
+                if (data.success) {
+                    const badge = document.getElementById('cartBadge');
+                    if (badge) badge.innerText = data.cartCount;
+
+                    document.getElementById('cartToastMsg').innerText = data.message;
+                    const toastEl = document.getElementById('cartToast');
+                    const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+                    toast.show();
+                } else {
+                    alert(data.message || "Có lỗi xảy ra!");
+                }
+            });
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

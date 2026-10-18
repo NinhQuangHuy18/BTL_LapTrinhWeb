@@ -1,0 +1,42 @@
+﻿.price-card {
+    border-radius: 14px;
+    border: 1px solid #eaeaea;
+}
+
+.custom-price-table th {
+    background-color: #212529;
+    color: #ffffff;
+    border-color: #373b3e;
+    padding: 12px 10px;
+    font-size: 0.9rem;
+}
+
+.custom-price-table td {
+    padding: 10px 12px;
+    font-size: 0.92rem;
+}
+
+.custom-price-table tbody tr:hover:not(.group-header) {
+    background-color: #fff5f5 !important;
+}
+
+.group-header td {
+    background-color: #f8d7da !important;
+    color: #842029;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.88rem;
+    letter-spacing: 0.3px;
+}
+
+@media (max-width: 575.98px) {
+    .custom-price-table th,
+    .custom-price-table td {
+        padding: 8px 6px;
+        font-size: 0.82rem;
+    }
+
+    .price-header-title {
+        font-size: 1.05rem !important;
+    }
+}

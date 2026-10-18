@@ -1,0 +1,90 @@
+﻿.checkout-card {
+    border-radius: 14px;
+    border: 1px solid #eaeaea;
+}
+
+.payment-option {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    position: relative;
+}
+
+    .payment-option:hover {
+        border-color: #f1aeb5;
+        background-color: #fffdfd;
+    }
+
+    .payment-option.active {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.08);
+    }
+
+.payment-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.35rem;
+}
+
+.checkout-item-list {
+    max-height: 310px;
+    overflow-y: auto;
+}
+
+.checkout-item-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 3px;
+    background: #fff;
+}
+
+.summary-sticky {
+    position: sticky;
+    top: 90px;
+}
+
+.vnpay-info-box {
+    border-left: 4px solid #005baa;
+    background-color: #f0f7ff;
+    border-radius: 8px;
+}
+
+.coupon-chip {
+    cursor: pointer;
+    border: 1px dashed #dc3545;
+    background: #fff5f5;
+    color: #dc3545;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+    .coupon-chip:hover {
+        background: #dc3545;
+        color: #fff;
+    }
+
+@media (max-width: 575.98px) {
+    .payment-option {
+        padding: 12px;
+    }
+
+    .payment-logo {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+}

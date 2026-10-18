@@ -1,0 +1,64 @@
+﻿@model BTL_LapTrinhWeb.Models.RegisterViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Account/Register.css" asp-append-version="true" />
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Tạo tài khoản</h2>
+            <p>Đăng ký nhanh chóng chỉ trong vài bước</p>
+        </div>
+
+        <form asp-action="Register" asp-controller="Account" method="post" class="login-form">
+
+            <div class="input-group mb-0 mt-3">
+                <i class="fa-solid fa-user"></i>
+                <input asp-for="FullName" type="text" placeholder="Họ và tên của bạn" required>
+            </div>
+            <span asp-validation-for="FullName" class="error-message"></span>
+
+            <div class="input-group mb-0 mt-3">
+                <i class="fa-solid fa-envelope"></i>
+                <input asp-for="Email" type="email" placeholder="Email của bạn" required>
+            </div>
+            <span asp-validation-for="Email" class="error-message"></span>
+
+            <div class="input-group mb-0 mt-3">
+                <i class="fa-solid fa-lock"></i>
+                <input asp-for="Password" type="password" placeholder="Mật khẩu" required>
+            </div>
+            <span asp-validation-for="Password" class="error-message"></span>
+
+            <div class="input-group mb-0 mt-3">
+                <i class="fa-solid fa-shield-halved"></i>
+                <input asp-for="ConfirmPassword" type="password" placeholder="Xác nhận mật khẩu" required>
+            </div>
+            <span asp-validation-for="ConfirmPassword" class="error-message"></span>
+
+            <div class="form-actions mt-3">
+                <label class="remember-me">
+                    <input type="checkbox" required> Tôi đồng ý với Điều khoản & Bảo mật
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit">Đăng ký ngay</button>
+
+            <div class="register-link">
+                <p>Đã có tài khoản? <a href="/Account/Login">Đăng nhập tại đây</a></p>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

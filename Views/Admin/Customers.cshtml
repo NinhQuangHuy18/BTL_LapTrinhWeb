@@ -1,0 +1,84 @@
+﻿@model List<BTL_LapTrinhWeb.Models.NguoiDung>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý khách hàng";
+}
+
+<div class="card stat-card bg-white p-3 p-md-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom pb-3 mb-3">
+        <h6 class="fw-bold text-dark m-0">
+            <i class="fa-solid fa-users text-danger me-2"></i>DANH SÁCH KHÁCH HÀNG (@Model.Count)
+        </h6>
+
+        <form method="get" action="/Admin/Customers" class="d-flex gap-2">
+            <input type="text" name="keyword" value="@ViewBag.Keyword" class="form-control form-control-sm" style="width: 240px;" placeholder="Tìm tên, email hoặc SĐT..." />
+            <button type="submit" class="btn btn-sm btn-danger text-nowrap">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>Tìm kiếm
+            </button>
+            @if (!string.IsNullOrEmpty(ViewBag.Keyword as string))
+            {
+                <a href="/Admin/Customers" class="btn btn-sm btn-outline-secondary text-nowrap">Tất cả</a>
+            }
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle small mb-0">
+            <thead class="table-light text-nowrap">
+                <tr>
+                    <th>ID</th>
+                    <th>Họ và tên</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th class="text-center">Số đơn đã mua</th>
+                    <th>Ngày đăng ký</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Cấp quyền hoạt động</th>
+                </tr>
+            </thead>
+            <tbody class="text-nowrap">
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>#@u.NguoiDungId</td>
+                        <td class="fw-bold text-dark">@u.HoTen</td>
+                        <td>@u.Email</td>
+                        <td>@(u.SoDienThoai ?? "Chưa cập nhật")</td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark">@(u.DonHangs?.Count ?? 0) đơn</span>
+                        </td>
+                        <td>@u.NgayTao.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (u.TrangThai)
+                            {
+                                <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Đang hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger"><i class="fa-solid fa-ban me-1"></i>Đã bị khóa</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <form asp-action="ToggleUserStatus" asp-controller="Admin" method="post" class="d-inline">
+                                <input type="hidden" name="nguoiDungId" value="@u.NguoiDungId" />
+                                <input type="hidden" name="returnUrl" value="Customers" />
+                                @if (u.TrangThai)
+                                {
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn muốn KHÓA tài khoản khách hàng này?');">
+                                        <i class="fa-solid fa-lock me-1"></i>Khóa TK
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('MỞ KHÓA cho tài khoản này hoạt động lại?');">
+                                        <i class="fa-solid fa-lock-open me-1"></i>Mở khóa
+                                    </button>
+                                }
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

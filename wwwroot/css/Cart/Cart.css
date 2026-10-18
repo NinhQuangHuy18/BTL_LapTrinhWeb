@@ -1,0 +1,46 @@
+﻿.cart-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 4px;
+    background: #fff;
+}
+
+.qty-group {
+    width: 115px;
+}
+
+.qty-btn {
+    width: 32px;
+    padding: 4px 0;
+}
+
+.qty-input {
+    text-align: center;
+    font-weight: 600;
+    padding: 4px 2px;
+}
+
+.summary-card {
+    border-radius: 12px;
+    position: sticky;
+    top: 90px;
+}
+
+.coupon-badge {
+    cursor: pointer;
+    border: 1px dashed #dc3545;
+    background: #fff5f5;
+    color: #dc3545;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+    .coupon-badge:hover {
+        background: #dc3545;
+        color: #fff;
+    }

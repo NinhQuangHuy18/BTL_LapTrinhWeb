@@ -1,0 +1,146 @@
+﻿@model List<BTL_LapTrinhWeb.Models.KhuyenMai>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý mã khuyến mãi (Chỉ Admin)";
+}
+
+<div class="row g-4">
+    <div class="col-12 col-xl-4">
+        <div class="card stat-card bg-white p-3 p-md-4">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="fa-solid fa-ticket text-danger me-2"></i>TẠO MÃ KHUYẾN MÃI MỚI
+            </h6>
+
+            <form asp-action="CreateCoupon" asp-controller="Admin" method="post" class="small">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mã Code khuyến mãi <span class="text-danger">*</span></label>
+                    <input type="text" name="maKhuyenMai" class="form-control text-uppercase fw-bold" placeholder="VD: HE2026, GIAM300K" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tên chương trình khuyến mãi <span class="text-danger">*</span></label>
+                    <input type="text" name="tenKhuyenMai" class="form-control" placeholder="VD: Giảm 300K mừng hè nắng nóng" required />
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Loại giảm giá</label>
+                        <select name="loaiGiamGia" class="form-select" id="discountTypeSelect" onchange="toggleMaxDiscountField()">
+                            <option value="Amount">Trừ tiền mặt (VNĐ)</option>
+                            <option value="Percent">Theo phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Giá trị giảm <span class="text-danger">*</span></label>
+                        <input type="number" name="giaTriGiam" class="form-control" placeholder="VD: 200000 hoặc 5" min="1" required />
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Đơn hàng tối thiểu</label>
+                        <input type="number" name="donHangToiThieu" class="form-control" value="5000000" min="0" step="100000" required />
+                    </div>
+                    <div class="col-6" id="maxDiscountGroup">
+                        <label class="form-label fw-semibold">Giảm tối đa (VNĐ)</label>
+                        <input type="number" name="giamToiDa" class="form-control" placeholder="Tùy chọn (nếu %)" min="0" step="50000" />
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Số lượt sử dụng</label>
+                        <input type="number" name="soLuongSuDung" class="form-control" value="50" min="1" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Hạn sử dụng đến</label>
+                        <input type="date" name="ngayKetThuc" class="form-control" value="@DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd")" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 fw-bold py-2">
+                    <i class="fa-solid fa-plus me-1"></i>Phát hành mã khuyến mãi
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+        <div class="card stat-card bg-white p-3 p-md-4">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="fa-solid fa-tags text-danger me-2"></i>DANH SÁCH MÃ KHUYẾN MÃI (@Model.Count)
+            </h6>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle small mb-0">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th>Mã Code</th>
+                            <th>Chương trình & Mức giảm</th>
+                            <th>Đơn tối thiểu</th>
+                            <th class="text-center">Lượt còn</th>
+                            <th>Hạn dùng</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-nowrap">
+                        @foreach (var km in Model)
+                        {
+                            bool hetHan = DateTime.Now > km.NgayKetThuc || km.SoLuongSuDung <= 0;
+
+                            <tr>
+                                <td>
+                                    <span class="badge bg-danger fs-6">@km.MaKhuyenMai</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@km.TenKhuyenMai</div>
+                                    <small class="text-success fw-semibold">
+                                        @if (km.LoaiGiamGia == "Percent")
+                                        {
+                                            <span>Giảm @km.GiaTriGiam.ToString("N0")% @(km.GiamToiDa.HasValue ? $"(Tối đa {km.GiamToiDa.Value:N0}₫)" : "")</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Giảm trực tiếp @km.GiaTriGiam.ToString("N0") ₫</span>
+                                        }
+                                    </small>
+                                </td>
+                                <td class="fw-semibold">@km.DonHangToiThieu.ToString("N0") ₫</td>
+                                <td class="text-center">
+                                    <span class="badge @(km.SoLuongSuDung > 0 ? "bg-info text-dark" : "bg-secondary")">
+                                        @km.SoLuongSuDung lượt
+                                    </span>
+                                </td>
+                                <td>@km.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (!km.TrangThai)
+                                    {
+                                        <span class="badge bg-secondary">Đã khóa</span>
+                                    }
+                                    else if (hetHan)
+                                    {
+                                        <span class="badge bg-warning text-dark">Hết hạn / Hết lượt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Đang áp dụng</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="ToggleCouponStatus" asp-controller="Admin" method="post">
+                                        <input type="hidden" name="khuyenMaiId" value="@km.KhuyenMaiId" />
+                                        <button type="submit" class="btn btn-sm @(km.TrangThai ? "btn-outline-danger" : "btn-success")">
+                                            <i class="fa-solid @(km.TrangThai ? "fa-lock" : "fa-lock-open") me-1"></i>
+                                            @(km.TrangThai ? "Khóa" : "Mở")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,297 @@
+﻿@model BTL_LapTrinhWeb.Models.NguoiDung
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Thông tin tài khoản";
+    ViewData["HideMainNav"] = true;
+    var donHangs = ViewBag.DanhSachDonHang as List<BTL_LapTrinhWeb.Models.DonHang>;
+    var diaChi = ViewBag.DiaChiNguoiDung as BTL_LapTrinhWeb.Models.DiaChiNguoiDung;
+}
+
+<style>
+    .profile-card {
+        border-radius: 14px;
+    }
+    .custom-profile-tabs .nav-link {
+        color: #495057;
+        transition: all 0.2s;
+    }
+    .custom-profile-tabs .nav-link.active {
+        background-color: #dc3545 !important;
+        color: #fff !important;
+    }
+    .width-20 {
+        width: 22px;
+        text-align: center;
+    }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-3 g-lg-4 my-2 mb-5">
+    <div class="col-12 col-lg-4 col-xl-3">
+        <div class="card border shadow-sm profile-card p-3 p-lg-4 bg-white">
+            <div class="d-flex flex-row flex-lg-column align-items-center text-start text-lg-center gap-3 gap-lg-0 mb-3 mb-lg-4 pb-3 pb-lg-0 border-bottom border-lg-0">
+                <div class="position-relative flex-shrink-0 mb-lg-3">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=@Model.Email"
+                         class="rounded-circle border border-2 border-danger p-1 shadow-sm"
+                         alt="Avatar" style="width: 80px; height: 80px; object-fit: cover; background: #f8f9fa;" />
+                </div>
+                <div class="overflow-hidden">
+                    <h6 class="fw-bold text-dark mb-1 text-truncate">@Model.HoTen</h6>
+                    <span class="badge @(Model.VaiTro == "Admin" ? "bg-danger" : Model.VaiTro == "Staff" ? "bg-primary" : "bg-success") mb-1">
+                        @Model.VaiTro
+                    </span>
+                    <p class="text-muted small mb-0 text-truncate">@Model.Email</p>
+                </div>
+            </div>
+
+            <div class="nav flex-lg-column nav-pills custom-profile-tabs gap-2 text-start" role="tablist">
+                <button class="nav-link active rounded-3 px-3 py-2 fw-semibold d-flex align-items-center" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button" role="tab">
+                    <i class="fa-solid fa-user me-2 width-20"></i> <span>Hồ sơ của tôi</span>
+                </button>
+                @if (Model.VaiTro == "Customer")
+                {
+                    <button class="nav-link rounded-3 px-3 py-2 fw-semibold d-flex align-items-center" data-bs-toggle="pill" data-bs-target="#tab-address" type="button" role="tab">
+                        <i class="fa-solid fa-location-dot me-2 width-20"></i> <span>Sổ địa chỉ</span>
+                    </button>
+                    <button class="nav-link rounded-3 px-3 py-2 fw-semibold d-flex align-items-center" data-bs-toggle="pill" data-bs-target="#tab-orders" type="button" role="tab">
+                        <i class="fa-solid fa-bag-shopping me-2 width-20"></i> <span>Đơn mua</span>
+                        @if (donHangs != null && donHangs.Count > 0)
+                        {
+                            <span class="badge bg-warning text-dark ms-auto rounded-pill">@donHangs.Count</span>
+                        }
+                    </button>
+                }
+                <button class="nav-link rounded-3 px-3 py-2 fw-semibold d-flex align-items-center" data-bs-toggle="pill" data-bs-target="#tab-password" type="button" role="tab">
+                    <i class="fa-solid fa-key me-2 width-20"></i> <span>Đổi mật khẩu</span>
+                </button>
+
+                <hr class="my-2 text-muted opacity-25 d-none d-lg-block" />
+
+                <a href="/Home" class="nav-link text-secondary rounded-3 px-3 py-2 fw-semibold d-flex align-items-center">
+                    <i class="fa-solid fa-house me-2 width-20"></i> <span>Về trang chủ</span>
+                </a>
+                <a href="/Account/Logout" class="nav-link text-danger rounded-3 px-3 py-2 fw-semibold d-flex align-items-center">
+                    <i class="fa-solid fa-right-from-bracket me-2 width-20"></i> <span>Đăng xuất</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8 col-xl-9">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab-profile" role="tabpanel">
+                <div class="card border shadow-sm profile-card p-3 p-md-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-3 mb-4">
+                        <i class="fa-solid fa-id-card me-2 text-danger"></i>Hồ Sơ Của Tôi
+                    </h5>
+                    <form asp-action="UpdateProfile" asp-controller="Account" method="post">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-muted">Họ và tên</label>
+                                <input type="text" name="hoTen" class="form-control rounded-3 py-2" value="@Model.HoTen" required />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Email (Tên đăng nhập)</label>
+                                <input type="email" class="form-control rounded-3 py-2 bg-light text-muted" value="@Model.Email" readonly />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Số điện thoại</label>
+                                <input type="tel" name="soDienThoai" class="form-control rounded-3 py-2" value="@Model.SoDienThoai" placeholder="Nhập số điện thoại" />
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-danger px-4 py-2 rounded-3 fw-bold shadow-sm">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i>Lưu hồ sơ
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-address" role="tabpanel">
+                <div class="card border shadow-sm profile-card p-3 p-md-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-3 mb-4">
+                        <i class="fa-solid fa-location-dot me-2 text-danger"></i>Sổ Địa Chỉ Nhận Hàng Mặc Định
+                    </h5>
+                    <form asp-action="UpdateAddress" asp-controller="Account" method="post">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Họ tên người nhận</label>
+                                <input type="text" name="nguoiNhan" class="form-control rounded-3 py-2" value="@(diaChi?.NguoiNhan ?? Model.HoTen)" required />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Số điện thoại nhận hàng</label>
+                                <input type="tel" name="soDienThoai" class="form-control rounded-3 py-2" value="@(diaChi?.SoDienThoai ?? Model.SoDienThoai)" required />
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Tỉnh / Thành phố</label>
+                                <input type="text" name="tinhThanh" class="form-control rounded-3 py-2" value="@diaChi?.TinhThanh" placeholder="Ví dụ: Hà Nội" />
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Quận / Huyện</label>
+                                <input type="text" name="quanHuyen" class="form-control rounded-3 py-2" value="@diaChi?.QuanHuyen" placeholder="Ví dụ: Cầu Giấy" />
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Phường / Xã</label>
+                                <input type="text" name="phuongXa" class="form-control rounded-3 py-2" value="@diaChi?.PhuongXa" placeholder="Ví dụ: Dịch Vọng" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-muted">Địa chỉ chi tiết (Số nhà, Tên đường...)</label>
+                                <textarea name="diaChiChiTiet" class="form-control rounded-3" rows="3" placeholder="Ví dụ: Số 120 đường Cầu Giấy" required>@diaChi?.DiaChiChiTiet</textarea>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-danger px-4 py-2 rounded-3 fw-bold shadow-sm">
+                                    <i class="fa-solid fa-pen-to-square me-2"></i>Cập nhật địa chỉ
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-orders" role="tabpanel">
+                <div class="card border shadow-sm profile-card p-3 p-md-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-3 mb-4">
+                        <i class="fa-solid fa-box-archive me-2 text-danger"></i>Lịch Sử Đơn Mua Của Bạn
+                    </h5>
+
+                    @if (donHangs != null && donHangs.Any())
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var item in donHangs)
+                            {
+                                var badgeClass = item.TrangThaiDonHang switch
+                                {
+                                    "Pending" => "bg-warning text-dark",
+                                    "Confirmed" => "bg-info text-dark",
+                                    "Packing" => "bg-primary text-white",
+                                    "Shipping" => "bg-primary text-white",
+                                    "Completed" => "bg-success text-white",
+                                    "Cancelled" => "bg-secondary text-white",
+                                    _ => "bg-light text-dark border"
+                                };
+
+                                var statusText = item.TrangThaiDonHang switch
+                                {
+                                    "Pending" => "Chờ xác nhận",
+                                    "Confirmed" => "Đã xác nhận",
+                                    "Packing" => "Đang đóng gói",
+                                    "Shipping" => "Đang giao & lắp đặt",
+                                    "Completed" => "Hoàn thành",
+                                    "Cancelled" => "Đã hủy",
+                                    _ => item.TrangThaiDonHang
+                                };
+
+                                <div class="border rounded-3 p-3 bg-light bg-opacity-50">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom pb-2 mb-2">
+                                        <div>
+                                            <strong class="text-danger fs-6">#@item.MaDonHang</strong>
+                                            <span class="text-muted small ms-2">(@item.NgayDat.ToString("dd/MM/yyyy HH:mm"))</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-white text-dark border">@item.PhuongThucThanhToan</span>
+                                            <span class="badge @(item.TrangThaiThanhToan == "Paid" ? "bg-success" : "bg-secondary")">
+                                                @(item.TrangThaiThanhToan == "Paid" ? "Đã thanh toán" : "Chưa thanh toán")
+                                            </span>
+                                            <span class="badge @badgeClass">@statusText</span>
+                                        </div>
+                                    </div>
+
+                                    @if (item.ChiTietDonHangs != null && item.ChiTietDonHangs.Any())
+                                    {
+                                        <ul class="list-unstyled small mb-2">
+                                            @foreach (var ct in item.ChiTietDonHangs)
+                                            {
+                                                <li class="d-flex justify-content-between py-1 border-bottom border-light">
+                                                    <span>
+                                                        <i class="fa-solid fa-snowflake text-danger me-1"></i>
+                                                        <strong>@ct.TenSanPham</strong> <span class="text-muted">(x@(ct.SoLuong))</span>
+                                                    </span>
+                                                    <span class="fw-semibold">@ct.ThanhTien.ToString("N0") ₫</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-1 small">
+                                        <div class="text-muted">
+                                            <div><i class="fa-solid fa-location-dot me-1"></i>Giao tới: <strong>@item.TenNguoiNhan (@item.SoDienThoaiNhan)</strong> - @item.DiaChiNhan</div>
+                                            @if (item.TienGiamGia > 0)
+                                            {
+                                                <div class="text-success">Đã giảm giá khuyến mãi: <strong>-@item.TienGiamGia.ToString("N0") ₫</strong></div>
+                                            }
+                                        </div>
+
+                                        <div class="d-flex align-items-center gap-3 ms-auto">
+                                            <div>
+                                                <span class="text-muted">Tổng thanh toán:</span>
+                                                <strong class="text-danger fs-5 ms-1">@item.TongThanhToan.ToString("N0") ₫</strong>
+                                            </div>
+
+                                            @if (item.TrangThaiDonHang == "Pending")
+                                            {
+                                                <form asp-action="CancelOrder" asp-controller="Account" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng #@item.MaDonHang không?');">
+                                                    <input type="hidden" name="donHangId" value="@item.DonHangId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold">
+                                                        <i class="fa-solid fa-xmark me-1"></i>Hủy đơn
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-basket-shopping fs-1 mb-3 text-danger opacity-50"></i>
+                            <p class="mb-3">Bạn chưa có đơn hàng nào.</p>
+                            <a href="/Home" class="btn btn-outline-danger btn-sm px-3">Mua sắm ngay</a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-password" role="tabpanel">
+                <div class="card border shadow-sm profile-card p-3 p-md-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-3 mb-4">
+                        <i class="fa-solid fa-shield-halved me-2 text-danger"></i>Đổi Mật Khẩu
+                    </h5>
+                    <form asp-action="ChangePassword" asp-controller="Account" method="post" style="max-width: 500px;">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Mật khẩu hiện tại</label>
+                            <input type="password" name="matKhauCu" class="form-control rounded-3 py-2" placeholder="Nhập mật khẩu hiện tại" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Mật khẩu mới</label>
+                            <input type="password" name="matKhauMoi" class="form-control rounded-3 py-2" placeholder="Nhập mật khẩu mới" required />
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-muted">Xác nhận mật khẩu mới</label>
+                            <input type="password" name="xacNhanMatKhauMoi" class="form-control rounded-3 py-2" placeholder="Nhập lại mật khẩu mới" required />
+                        </div>
+                        <button type="submit" class="btn btn-danger px-4 py-2 rounded-3 fw-bold shadow-sm">
+                            <i class="fa-solid fa-check me-2"></i>Xác nhận đổi mật khẩu
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

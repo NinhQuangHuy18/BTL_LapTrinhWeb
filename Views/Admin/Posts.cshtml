@@ -1,0 +1,105 @@
+﻿@model List<BTL_LapTrinhWeb.Models.BaiViet>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý bài viết tin tức";
+    var categories = ViewBag.Categories as List<BTL_LapTrinhWeb.Models.DanhMucBaiViet>;
+}
+
+<div class="row g-4">
+    <div class="col-12 col-xl-4">
+        <div class="card stat-card bg-white p-3 p-md-4">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="fa-solid fa-pen-nib text-danger me-2"></i>ĐĂNG BÀI VIẾT MỚI
+            </h6>
+            <form asp-action="CreatePost" asp-controller="Admin" method="post">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                    <input type="text" name="tieuDe" class="form-control form-control-sm" placeholder="Nhập tiêu đề bài viết..." required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Chuyên mục</label>
+                    <select name="danhMucBaiVietId" class="form-select form-select-sm">
+                        @if (categories != null)
+                        {
+                            @foreach (var c in categories)
+                            {
+                                <option value="@c.DanhMucBaiVietId">@c.TenDanhMuc</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Link ảnh đại diện</label>
+                    <input type="text" name="anhDaiDien" class="form-control form-control-sm" value="https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Tóm tắt ngắn</label>
+                    <textarea name="tomTat" class="form-control form-control-sm" rows="2" placeholder="Mô tả ngắn hiển thị ngoài trang chủ..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Nội dung chi tiết</label>
+                    <textarea name="noiDung" class="form-control form-control-sm" rows="4" placeholder="Nội dung bài viết..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Trạng thái</label>
+                    <select name="trangThai" class="form-select form-select-sm">
+                        <option value="Published">Xuất bản ngay (Published)</option>
+                        <option value="Draft">Lưu nháp (Draft)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger w-100 fw-bold btn-sm py-2">
+                    <i class="fa-solid fa-paper-plane me-1"></i>Đăng bài viết
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+        <div class="card stat-card bg-white p-3 p-md-4">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="fa-solid fa-newspaper text-danger me-2"></i>DANH SÁCH BÀI VIẾT (@Model.Count)
+            </h6>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle small mb-0">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tiêu đề & Chuyên mục</th>
+                            <th>Người đăng</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model)
+                        {
+                            <tr>
+                                <td style="width: 70px;">
+                                    <img src="@b.AnhDaiDien" class="rounded" style="width: 65px; height: 45px; object-fit: cover;" />
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@b.TieuDe</div>
+                                    <small class="text-muted">Chuyên mục: @(b.DanhMucBaiViet?.TenDanhMuc ?? "Tin tức") | @b.NgayTao.ToString("dd/MM/yyyy")</small>
+                                </td>
+                                <td class="text-nowrap">@(b.NguoiTao?.HoTen ?? "Quản trị viên")</td>
+                                <td class="text-nowrap">
+                                    <span class="badge @(b.TrangThai == "Published" ? "bg-success" : "bg-secondary")">
+                                        @b.TrangThai
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="DeletePost" asp-controller="Admin" method="post" onsubmit="return confirm('Xóa bài viết này?');">
+                                        <input type="hidden" name="baiVietId" value="@b.BaiVietId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

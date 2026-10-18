@@ -1,0 +1,284 @@
+﻿@model BTL_LapTrinhWeb.Models.SanPham
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.TenSanPham;
+
+    var danhSachAnh = Model.HinhAnhSanPhams?.ToList() ?? new List<BTL_LapTrinhWeb.Models.HinhAnhSanPham>();
+    string anhChinh = danhSachAnh.FirstOrDefault()?.DuongDanAnh
+                      ?? "https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg";
+}
+
+<style>
+    .detail-main-img {
+        width: 100%;
+        height: 360px;
+        object-fit: contain;
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+    .thumb-img {
+        width: 68px;
+        height: 68px;
+        object-fit: cover;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .thumb-img.active, .thumb-img:hover {
+            border-color: #dc3545;
+        }
+
+    .spec-table th {
+        width: 40%;
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container my-3 mb-5">
+    <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white mb-4">
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-lg-4">
+                <img id="mainProductImg"
+                     src="@anhChinh"
+                     onerror="this.src='https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg'"
+                     alt="@Model.TenSanPham"
+                     class="detail-main-img mb-3" />
+
+                @if (danhSachAnh.Count > 1)
+                {
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        @for (int i = 0; i < danhSachAnh.Count; i++)
+                        {
+                            <img src="@danhSachAnh[i].DuongDanAnh"
+                                 class="thumb-img @(i == 0 ? "active" : "")"
+                                 onclick="changeMainImage(this, '@danhSachAnh[i].DuongDanAnh')"
+                                 alt="Thumbnail" />
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-5">
+                <h1 class="fw-bold text-dark fs-4 mb-2">@Model.TenSanPham</h1>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 small text-muted mb-3 pb-2 border-bottom">
+                    <span>Mã SP: <strong class="text-dark">@Model.MaSanPham</strong></span>
+                    @if (Model.ThuongHieu != null)
+                    {
+                        <span>Thương hiệu: <strong class="text-danger">@Model.ThuongHieu.TenThuongHieu</strong></span>
+                    }
+                    <span>
+                        Tình trạng:
+                        @if (Model.SoLuongTon > 0)
+                        {
+                            <span class="badge bg-success">Còn hàng (@Model.SoLuongTon)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Tạm hết hàng</span>
+                        }
+                    </span>
+                </div>
+
+                <div class="bg-danger bg-opacity-10 border border-danger border-opacity-25 p-3 rounded-3 mb-3">
+                    <small class="text-muted d-block">Giá bán tại kho (Đã gồm VAT):</small>
+                    <div class="d-flex align-items-baseline gap-3">
+                        <span class="fs-3 fw-bold text-danger">@Model.GiaBan.ToString("N0") ₫</span>
+                        @if (Model.GiaNiemYet > Model.GiaBan)
+                        {
+                            <span class="text-muted text-decoration-line-through fs-6">
+                                @Convert.ToDecimal(Model.GiaNiemYet).ToString("N0") ₫
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="row g-2 small mb-3">
+                    <div class="col-6">
+                        <div class="p-2 border rounded bg-light">
+                            <span class="text-muted d-block">Công suất / Dung tích:</span>
+                            <strong class="text-dark">@(Model.CongSuat ?? "Tiêu chuẩn hãng")</strong>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 border rounded bg-light">
+                            <span class="text-muted d-block">Bảo hành chính hãng:</span>
+                            <strong class="text-dark">@(Model.BaoHanhThang ?? 24) tháng</strong>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.MoTaNgan))
+                {
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-dark small text-uppercase mb-1">Đặc điểm nổi bật:</h6>
+                        <div class="small text-secondary">@Html.Raw(Model.MoTaNgan)</div>
+                    </div>
+                }
+
+                @if (!User.IsInRole("Admin") && !User.IsInRole("Staff"))
+                {
+                    @if (Model.SoLuongTon > 0)
+                    {
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="small fw-semibold text-muted">Số lượng mua:</span>
+                            <div class="input-group input-group-sm" style="width: 130px;">
+                                <button type="button" class="btn btn-outline-secondary" onclick="adjustDetailQty(-1)">-</button>
+                                <input type="number" id="buyQty" class="form-control text-center fw-bold" value="1" min="1" max="@Model.SoLuongTon" />
+                                <button type="button" class="btn btn-outline-secondary" onclick="adjustDetailQty(1)">+</button>
+                            </div>
+                            <small class="text-muted">(Tối đa @Model.SoLuongTon)</small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="buyNowDetail(@Model.SanPhamId)" class="btn btn-danger py-2 px-3 fw-bold text-uppercase w-50 shadow-sm">
+                                <i class="fa-solid fa-bolt me-1"></i>ĐẶT MUA NGAY
+                            </button>
+                            <button type="button" onclick="addToCartDetail(@Model.SanPhamId)" class="btn btn-warning py-2 px-3 fw-bold text-dark text-uppercase w-50 shadow-sm">
+                                <i class="fa-solid fa-cart-plus me-1"></i>THÊM VÀO GIỎ
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary text-center fw-bold mb-0">
+                            <i class="fa-solid fa-box-open me-2"></i>SẢN PHẨM HIỆN ĐANG TẠM HẾT HÀNG
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning small mb-0">
+                        <i class="fa-solid fa-user-shield me-2"></i>Bạn đang xem sản phẩm ở chế độ <strong>Quản trị / Nhân viên</strong>.
+                        <a href="/Admin/Products" class="fw-bold text-danger ms-1">Cập nhật tồn kho & giá</a>
+                    </div>
+                }
+            </div>
+
+            <!-- CỘT 3 (3 CỘT): CAM KẾT MUA SẮM TẠI HUY SƠN -->
+            <div class="col-12 col-lg-3">
+                <div class="card border shadow-sm p-3 bg-light h-100 rounded-3">
+                    <h6 class="text-danger fw-bold text-center mb-3 border-bottom pb-2">
+                        YÊN TÂM MUA SẮM TẠI HUY SƠN
+                    </h6>
+                    <ul class="list-unstyled small mb-3 d-flex flex-column gap-2">
+                        <li><i class="fa-solid fa-circle-check text-success me-2"></i>Hàng chính hãng mới 100% nguyên đai</li>
+                        <li><i class="fa-solid fa-truck-fast text-danger me-2"></i>Giao hàng & lắp đặt siêu tốc trong ngày</li>
+                        <li><i class="fa-solid fa-shield-halved text-primary me-2"></i>Kích hoạt bảo hành điện tử chính hãng</li>
+                        <li><i class="fa-solid fa-rotate text-warning me-2"></i>Lỗi 1 đổi 1 theo tiêu chuẩn nhà sản xuất</li>
+                    </ul>
+                    <div class="mt-auto p-3 bg-white rounded border text-center">
+                        <small class="text-muted d-block">Hotline tư vấn kỹ thuật:</small>
+                        <strong class="text-danger fs-5"><i class="fa-solid fa-phone-volume me-1"></i>0918.925.288</strong>
+                        <a href="/Home/PriceList" class="btn btn-outline-danger btn-sm w-100 mt-2">
+                            Xem bảng giá vật tư lắp đặt
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHỐI DƯỚI: MÔ TẢ CHI TIẾT & BẢNG THÔNG SỐ KỸ THUẬT -->
+    <div class="row g-4">
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white h-100">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="fa-solid fa-file-lines text-danger me-2"></i>ĐÁNH GIÁ & MÔ TẢ CHI TIẾT SẢN PHẨM
+                </h5>
+                <div class="small text-dark lh-lg">
+                    @if (!string.IsNullOrEmpty(Model.MoTaChiTiet))
+                    {
+                        @Html.Raw(Model.MoTaChiTiet)
+                    }
+                    else
+                    {
+                        <p>Sản phẩm <strong>@Model.TenSanPham</strong> được phân phối chính hãng tại Kho Điện Lạnh Huy Sơn với đầy đủ chứng nhận xuất xứ và bảo hành điện tử toàn quốc.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white h-100">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="fa-solid fa-gears text-danger me-2"></i>THÔNG SỐ KỸ THUẬT
+                </h5>
+                <table class="table table-bordered small spec-table mb-0">
+                    <tbody>
+                        <tr>
+                            <th>Model</th>
+                            <td>@(Model.Model ?? Model.MaSanPham)</td>
+                        </tr>
+                        <tr>
+                            <th>Công suất / Dung tích</th>
+                            <td>@(Model.CongSuat ?? "Tiêu chuẩn")</td>
+                        </tr>
+                        <tr>
+                            <th>Xuất xứ</th>
+                            <td>@(Model.XuatXu ?? "Chính hãng")</td>
+                        </tr>
+                        <tr>
+                            <th>Thời gian bảo hành</th>
+                            <td>@(Model.BaoHanhThang ?? 24) tháng</td>
+                        </tr>
+                        @if (Model.ThongSoKyThuats != null && Model.ThongSoKyThuats.Any())
+                        {
+                            @foreach (var ts in Model.ThongSoKyThuats)
+                            {
+                                <tr>
+                                    <th>@ts.TenThongSo</th>
+                                    <td>@ts.GiaTri</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const maxStock = @Model.SoLuongTon;
+
+        function changeMainImage(el, src) {
+            document.getElementById('mainProductImg').src = src;
+            document.querySelectorAll('.thumb-img').forEach(img => img.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function adjustDetailQty(delta) {
+            const input = document.getElementById('buyQty');
+            let val = (parseInt(input.value) || 1) + delta;
+            if (val < 1) val = 1;
+            if (val > maxStock) {
+                alert(`Trong kho hiện chỉ còn tối đa ${maxStock} sản phẩm!`);
+                val = maxStock;
+            }
+            input.value = val;
+        }
+
+        function addToCartDetail(sanPhamId) {
+            const input = document.getElementById('buyQty');
+            let qty = parseInt(input ? input.value : 1) || 1;
+            if (qty > maxStock) qty = maxStock;
+            addToCart(sanPhamId, qty);
+        }
+
+        function buyNowDetail(sanPhamId) {
+            const input = document.getElementById('buyQty');
+            let qty = parseInt(input ? input.value : 1) || 1;
+            if (qty > maxStock) qty = maxStock;
+            window.location.href = `/mua-ngay?productId=${sanPhamId}&quantity=${qty}`;
+        }
+    </script>
+}

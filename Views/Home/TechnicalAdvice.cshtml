@@ -1,0 +1,487 @@
+﻿@model BTL_LapTrinhWeb.Models.TechnicalAdviceViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Tư vấn kỹ thuật & Chọn mua điện lạnh";
+}
+
+<style>
+    .advice-hero {
+        background: linear-gradient(135deg, #212529 0%, #842029 55%, #dc3545 100%);
+        border-radius: 16px;
+        color: #fff;
+        padding: 36px 28px;
+    }
+
+    .step-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .form-consult-card {
+        border-radius: 16px;
+        border: 1px solid #eaeaea;
+    }
+
+    .category-radio-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 14px 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        height: 100%;
+        background: #fff;
+    }
+
+    .category-radio-card.active {
+        border-color: #dc3545;
+        background: #fff5f5;
+        color: #dc3545;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.12);
+    }
+
+    .result-expert-box {
+        border-left: 5px solid #dc3545;
+        background: #fff8f8;
+        border-radius: 12px;
+    }
+
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #eaeaea;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .product-img-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background-color: #f8f9fa;
+    }
+
+    .product-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-title {
+        font-size: 0.92rem;
+        font-weight: 600;
+        line-height: 1.35em;
+        height: 2.7em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        color: #212529;
+    }
+
+    .price-new {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    .price-old {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+
+    .btn-action {
+        white-space: nowrap;
+        font-size: 0.8rem;
+        padding: 6px 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .faq-accordion .accordion-button:not(.collapsed) {
+        background-color: #fff5f5;
+        color: #dc3545;
+        font-weight: 700;
+        box-shadow: none;
+    }
+</style>
+
+<div class="container my-4 mb-5">
+    <div class="advice-hero shadow-sm mb-5">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3">
+                    <i class="fa-solid fa-screwdriver-wrench me-1"></i>CHUYÊN GIA ĐIỆN LẠNH HUY SƠN
+                </span>
+                <h2 class="fw-bold mb-3">Tư Vấn Kỹ Thuật & Chọn Công Suất Chuẩn Xác</h2>
+                <p class="text-light opacity-90 mb-4" style="line-height: 1.6;">
+                    Chọn đúng công suất điều hòa, tủ lạnh, máy giặt hay bình nóng lạnh giúp <strong>tiết kiệm đến 40% điện năng, máy chạy êm và bền bỉ gấp đôi</strong>. Hãy nhập thông số nhu cầu của gia đình bạn bên dưới để nhận khuyến nghị kỹ thuật và danh sách máy phù hợp nhất!
+                </p>
+
+                <div class="row g-3 mb-4 small">
+                    <div class="col-12 col-sm-4 d-flex align-items-center gap-2">
+                        <span class="step-badge">1</span>
+                        <span>Chọn thiết bị & Diện tích / Số người</span>
+                    </div>
+                    <div class="col-12 col-sm-4 d-flex align-items-center gap-2">
+                        <span class="step-badge">2</span>
+                        <span>Chọn mức ngân sách & Thương hiệu</span>
+                    </div>
+                    <div class="col-12 col-sm-4 d-flex align-items-center gap-2">
+                        <span class="step-badge">3</span>
+                        <span>Nhận khuyến nghị & Sản phẩm gợi ý</span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#formTuVan" class="btn btn-warning fw-bold text-dark px-4 py-2 rounded-3 shadow-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Bắt đầu tư vấn ngay
+                    </a>
+                    <a href="#faqSection" class="btn btn-outline-light px-4 py-2 rounded-3">
+                        <i class="fa-regular fa-circle-question me-2"></i>Câu hỏi thường gặp (FAQ)
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4 d-none d-lg-block text-center">
+                <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-light border-opacity-25">
+                    <i class="fa-solid fa-headset text-warning mb-2" style="font-size: 3rem;"></i>
+                    <h6 class="fw-bold">Hỗ trợ khảo sát lắp đặt tận nơi</h6>
+                    <p class="small text-light opacity-75 mb-3">Tư vấn vị trí đặt dàn nóng & đường ống đồng miễn phí.</p>
+                    <div class="bg-white text-danger fw-bold fs-4 py-2 px-3 rounded-3">
+                        <i class="fa-solid fa-phone-volume me-2"></i>0918.925.288
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="formTuVan" class="card form-consult-card shadow-sm bg-white p-3 p-md-4 mb-5">
+        <div class="border-bottom pb-3 mb-4">
+            <h4 class="fw-bold text-dark m-0 fs-5">
+                <i class="fa-solid fa-sliders text-danger me-2"></i>BIỂU MẪU THU THẬP NHU CẦU SỬ DỤNG
+            </h4>
+            <small class="text-muted">Chọn các tiêu chí dưới đây để hệ thống tính toán công suất và lọc sản phẩm</small>
+        </div>
+
+        <form action="/Home/TechnicalAdvice" method="get">
+            <input type="hidden" name="submitted" value="true" />
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-dark small text-uppercase">1. Bạn cần tư vấn thiết bị nào?</label>
+                <div class="row g-2 g-md-3">
+                    <div class="col-6 col-md-3">
+                        <label class="category-radio-card d-block @(Model.DanhMucId == 1 ? "active" : "")" onclick="selectCategory(1, this)">
+                            <input type="radio" name="danhMucId" value="1" class="d-none" @(Model.DanhMucId == 1 ? "checked" : "") />
+                            <i class="fa-solid fa-snowflake fs-3 mb-2 d-block"></i>
+                            <span class="fw-bold small">Điều hòa không khí</span>
+                        </label>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="category-radio-card d-block @(Model.DanhMucId == 2 ? "active" : "")" onclick="selectCategory(2, this)">
+                            <input type="radio" name="danhMucId" value="2" class="d-none" @(Model.DanhMucId == 2 ? "checked" : "") />
+                            <i class="fa-solid fa-temperature-low fs-3 mb-2 d-block"></i>
+                            <span class="fw-bold small">Tủ lạnh</span>
+                        </label>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="category-radio-card d-block @(Model.DanhMucId == 3 ? "active" : "")" onclick="selectCategory(3, this)">
+                            <input type="radio" name="danhMucId" value="3" class="d-none" @(Model.DanhMucId == 3 ? "checked" : "") />
+                            <i class="fa-solid fa-jug-detergent fs-3 mb-2 d-block"></i>
+                            <span class="fw-bold small">Máy giặt</span>
+                        </label>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="category-radio-card d-block @(Model.DanhMucId == 4 ? "active" : "")" onclick="selectCategory(4, this)">
+                            <input type="radio" name="danhMucId" value="4" class="d-none" @(Model.DanhMucId == 4 ? "checked" : "") />
+                            <i class="fa-solid fa-shower fs-3 mb-2 d-block"></i>
+                            <span class="fw-bold small">Bình nóng lạnh</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label id="scaleLabel" class="form-label fw-bold text-dark small">2. Diện tích phòng / Số người dùng</label>
+                    <select name="quyMoSuDung" id="scaleSelect" class="form-select py-2">
+                        <option value="nho" selected="@(Model.QuyMoSuDung == "nho" ? "selected" : null)">Phòng dưới 15m² (Hoặc 1 - 3 người)</option>
+                        <option value="vua" selected="@(Model.QuyMoSuDung == "vua" ? "selected" : null)">Phòng 15 - 20m² (Hoặc 3 - 5 người)</option>
+                        <option value="lon" selected="@(Model.QuyMoSuDung == "lon" ? "selected" : null)">Phòng 20 - 30m² (Hoặc trên 5 người)</option>
+                        <option value="rat-lon" selected="@(Model.QuyMoSuDung == "rat-lon" ? "selected" : null)">Phòng trên 30m² / Không gian rộng</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fw-bold text-dark small">3. Mức ngân sách dự kiến</label>
+                    <select name="mucGia" class="form-select py-2">
+                        <option value="all" selected="@(Model.MucGia == "all" ? "selected" : null)">Tất cả mức giá</option>
+                        <option value="duoi-6tr" selected="@(Model.MucGia == "duoi-6tr" ? "selected" : null)">Dưới 6.000.000 ₫</option>
+                        <option value="6tr-10tr" selected="@(Model.MucGia == "6tr-10tr" ? "selected" : null)">Từ 6.000.000 ₫ - 10.000.000 ₫</option>
+                        <option value="10tr-15tr" selected="@(Model.MucGia == "10tr-15tr" ? "selected" : null)">Từ 10.000.000 ₫ - 15.000.000 ₫</option>
+                        <option value="tren-15tr" selected="@(Model.MucGia == "tren-15tr" ? "selected" : null)">Trên 15.000.000 ₫</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fw-bold text-dark small">4. Thương hiệu ưu tiên</label>
+                    <select name="thuongHieuId" class="form-select py-2">
+                        <option value="">Tất cả thương hiệu chính hãng</option>
+                        @foreach (var th in Model.DanhSachThuongHieu)
+                        {
+                            <option value="@th.ThuongHieuId" selected="@(Model.ThuongHieuId == th.ThuongHieuId ? "selected" : null)">
+                                @th.TenThuongHieu
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fw-bold text-dark small">5. Tiêu chí ưu tiên hàng đầu</label>
+                    <select name="uuTien" class="form-select py-2">
+                        <option value="inverter" selected="@(Model.UuTien == "inverter" ? "selected" : null)">Tiết kiệm điện Inverter & Bền bỉ</option>
+                        <option value="gia-re" selected="@(Model.UuTien == "gia-re" ? "selected" : null)">Giá tiết kiệm nhất tại kho</option>
+                        <option value="cao-cap" selected="@(Model.UuTien == "cao-cap" ? "selected" : null)">Dòng cao cấp nhiều công nghệ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="text-center pt-2">
+                <button type="submit" class="btn btn-danger px-5 py-2 fw-bold text-uppercase rounded-3 shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass-chart me-2"></i>Phân tích & Xem kết quả tư vấn
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.DaTuVan)
+    {
+        <div id="ketQuaTuVan" class="mb-5">
+            <div class="result-expert-box p-3 p-md-4 shadow-sm mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom border-danger border-opacity-25 pb-3 mb-3">
+                    <div>
+                        <span class="badge bg-danger mb-1">KẾT QUẢ PHÂN TÍCH KỸ THUẬT</span>
+                        <h4 class="fw-bold text-dark m-0 fs-5">@Model.TieuDeKetQua</h4>
+                    </div>
+                    <div class="bg-danger text-white px-3 py-2 rounded-3 text-center">
+                        <small class="d-block opacity-75" style="font-size: 11px;">Thông số khuyến nghị:</small>
+                        <strong class="fs-6">@Model.CongSuatKhuyenNghi</strong>
+                    </div>
+                </div>
+
+                <div class="row g-3 small">
+                    <div class="col-12 col-md-6">
+                        <div class="bg-white p-3 rounded-3 border h-100">
+                            <h6 class="fw-bold text-danger mb-2">
+                                <i class="fa-solid fa-user-check me-2"></i>Lời khuyên từ Kỹ thuật viên:
+                            </h6>
+                            <p class="text-dark mb-0" style="line-height: 1.6;">@Model.LoiKhuyenChuyenGia</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="bg-white p-3 rounded-3 border h-100">
+                            <h6 class="fw-bold text-primary mb-2">
+                                <i class="fa-solid fa-screwdriver-wrench me-2"></i>Lưu ý vật tư & Lắp đặt chuẩn hãng:
+                            </h6>
+                            <p class="text-dark mb-2" style="line-height: 1.6;">@Model.LuuYLapDat</p>
+                            <a href="/Home/PriceList" class="text-danger fw-semibold text-decoration-none">
+                                Xem bảng giá vật tư & công lắp đặt <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-dark m-0">
+                    <i class="fa-solid fa-thumbs-up text-danger me-2"></i>CÁC SẢN PHẨM PHÙ HỢP NHẤT VỚI NHU CẦU CỦA BẠN
+                </h5>
+                <span class="small text-muted">Gợi ý <strong>@Model.SanPhamGoiY.Count</strong> sản phẩm</span>
+            </div>
+
+            <div class="row g-2 g-md-3 g-lg-4">
+                @foreach (var sp in Model.SanPhamGoiY)
+                {
+                    var anhChinh = sp.HinhAnhSanPhams?.FirstOrDefault()?.DuongDanAnh
+                                   ?? "https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg";
+
+                    <div class="col-6 col-md-4 col-lg-3 d-flex align-items-stretch">
+                        <div class="card product-card w-100 shadow-sm">
+                            <div class="product-img-wrapper">
+                                <span class="badge bg-danger position-absolute top-0 start-0 m-2">Khuyên dùng</span>
+                                <a href="/Product/ProductDetails/@sp.SanPhamId">
+                                    <img src="@anhChinh"
+                                         onerror="this.src='https://dienlanhthinhphat.com.vn/wp-content/uploads/2026/10/thinh-phat-Thiet-ke-chua-co-ten-3.jpg'"
+                                         alt="@sp.TenSanPham">
+                                </a>
+                            </div>
+
+                            <div class="card-body d-flex flex-column p-3">
+                                <small class="text-muted mb-1">Công suất: <strong class="text-dark">@(sp.CongSuat ?? "Chuẩn hãng")</strong></small>
+                                <a href="/Product/ProductDetails/@sp.SanPhamId" class="text-decoration-none">
+                                    <div class="product-title mb-2" title="@sp.TenSanPham">@sp.TenSanPham</div>
+                                </a>
+
+                                <div class="mb-3">
+                                    <span class="price-new">@sp.GiaBan.ToString("N0")₫</span>
+                                    @if (sp.GiaNiemYet > sp.GiaBan)
+                                    {
+                                        <span class="price-old ms-1">@Convert.ToDecimal(sp.GiaNiemYet).ToString("N0")₫</span>
+                                    }
+                                </div>
+
+                                <div class="mt-auto d-flex flex-column gap-2">
+                                    @if (sp.SoLuongTon > 0)
+                                    {
+                                        <div class="d-flex gap-2">
+                                            <a href="/Product/ProductDetails/@sp.SanPhamId" class="btn btn-outline-secondary btn-action w-50">
+                                                <i class="fa-regular fa-eye"></i> <span>Chi tiết</span>
+                                            </a>
+                                            <button type="button" onclick="addToCart(@sp.SanPhamId)" class="btn btn-outline-danger btn-action w-50">
+                                                <i class="fa-solid fa-cart-plus"></i> <span>Thêm giỏ</span>
+                                            </button>
+                                        </div>
+                                        <a href="/mua-ngay?productId=@sp.SanPhamId" class="btn btn-danger btn-action w-100 fw-semibold">
+                                            Mua ngay
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/Product/ProductDetails/@sp.SanPhamId" class="btn btn-outline-secondary btn-action w-100">
+                                            <i class="fa-regular fa-eye"></i> <span>Xem chi tiết</span>
+                                        </a>
+                                        <button type="button" class="btn btn-secondary btn-action w-100 fw-semibold" disabled>
+                                            Tạm hết hàng
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div id="faqSection" class="card form-consult-card shadow-sm bg-white p-3 p-md-4">
+        <div class="text-center mb-4">
+            <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill fw-semibold mb-2">CẨM NANG KỸ THUẬT</span>
+            <h4 class="fw-bold text-dark">CÂU HỎI THƯỜNG GẶP (FAQ)</h4>
+            <p class="text-muted small mb-0">Giải đáp nhanh các thắc mắc phổ biến khi chọn mua và lắp đặt thiết bị điện lạnh</p>
+        </div>
+
+        <div class="accordion faq-accordion" id="faqAccordion">
+            <div class="accordion-item border rounded-3 mb-2 overflow-hidden">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        1. Cách tính công suất điều hòa (BTU / HP) theo diện tích phòng như thế nào là chuẩn nhất?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-secondary" style="line-height: 1.7;">
+                        Công thức chuẩn cho phòng có chiều cao trần trung bình 3m là <strong>1m² × 600 BTU</strong>:
+                        <ul class="mt-2 mb-0">
+                            <li><strong>Phòng dưới 15m²:</strong> Chọn máy <strong>9.000 BTU (1 HP)</strong>.</li>
+                            <li><strong>Phòng từ 15m² - 20m²:</strong> Chọn máy <strong>12.000 BTU (1.5 HP)</strong>.</li>
+                            <li><strong>Phòng từ 20m² - 30m²:</strong> Chọn máy <strong>18.000 BTU (2 HP)</strong>.</li>
+                            <li><strong>Phòng từ 30m² - 40m²:</strong> Chọn máy <strong>24.000 BTU (2.5 HP)</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border rounded-3 mb-2 overflow-hidden">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        2. Nên mua điều hòa Inverter hay điều hòa cơ (Non-Inverter)?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-secondary" style="line-height: 1.7;">
+                        Nếu gia đình bật điều hòa <strong>trên 4 tiếng/ngày</strong> (đặc biệt là phòng ngủ), bạn nên chọn <strong>Điều hòa Inverter</strong> để tiết kiệm 35% - 60% điện năng và vận hành êm ái.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border rounded-3 mb-2 overflow-hidden">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        3. Vì sao lắp điều hòa bắt buộc phải giữ chiều dài ống đồng tối thiểu 3 mét?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-secondary" style="line-height: 1.7;">
+                        Các hãng sản xuất đều nạp sẵn lượng môi chất lạnh (Gas R32) tương ứng với đường ống chuẩn từ <strong>3m đến 7.5m</strong>. Nếu lắp ống ngắn dưới 3m sẽ gây rung ồn cục nóng, giảm tuổi thọ máy nén và có thể bị từ chối bảo hành chính hãng.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border rounded-3 mb-0 overflow-hidden">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                        4. Bao lâu nên vệ sinh, bảo dưỡng điều hòa và bình nóng lạnh định kỳ?
+                    </button>
+                </h2>
+                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-secondary" style="line-height: 1.7;">
+                        Nên tự rửa lưới lọc bụi dàn lạnh 1 tháng/lần và bảo dưỡng toàn bộ máy định kỳ <strong>6 tháng/lần</strong> đối với điều hòa; kiểm tra thanh Magie và sục rửa bình nóng lạnh <strong>1 - 2 năm/lần</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectCategory(catId, element) {
+            document.querySelectorAll('.category-radio-card').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            element.querySelector('input[type="radio"]').checked = true;
+
+            const scaleLabel = document.getElementById('scaleLabel');
+            const scaleSelect = document.getElementById('scaleSelect');
+
+            if (catId === 1) {
+                scaleLabel.innerText = '2. Diện tích phòng lắp điều hòa';
+                scaleSelect.options[0].text = 'Dưới 15m² (Phòng ngủ nhỏ)';
+                scaleSelect.options[1].text = 'Từ 15m² - 20m² (Phòng ngủ lớn / Khách vừa)';
+                scaleSelect.options[2].text = 'Từ 20m² - 30m² (Phòng khách / Văn phòng)';
+                scaleSelect.options[3].text = 'Trên 30m² (Không gian lớn)';
+            } else {
+                scaleLabel.innerText = '2. Số lượng thành viên sử dụng';
+                scaleSelect.options[0].text = 'Từ 1 - 3 người (Gia đình nhỏ)';
+                scaleSelect.options[1].text = 'Từ 3 - 5 người (Gia đình tiêu chuẩn)';
+                scaleSelect.options[2].text = 'Trên 5 người (Gia đình đông người)';
+                scaleSelect.options[3].text = 'Nhu cầu sử dụng dung tích cực lớn';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const resultEl = document.getElementById('ketQuaTuVan');
+            if (resultEl) {
+                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    </script>
+}
