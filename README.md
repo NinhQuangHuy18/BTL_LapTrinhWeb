@@ -105,8 +105,12 @@ cd BTL_LapTrinhWeb
 
 ### Bước 2: Khởi tạo Cơ sở dữ liệu SQL Server
 1. Mở **SQL Server Management Studio (SSMS)**.
-2. Mở file script SQL khởi tạo CSDL **`DienLanhHuySon`** và nhấn **Execute (`F5`)** để tạo 17 bảng cùng dữ liệu mẫu.
-3. Kiểm tra chuỗi kết nối trong file `appsettings.json`:
+2. Truy cập nhánh branchsql, ở đây tụi mình đã chuẩn bị 3 mẫu sql để các bạn có thể dùng cho dự án. (Do trong quá trình làm nhóm mình đã có nhiều thay đổi và chỉnh sửa nên đã chia ra 3 file sql tiện cho việc quản lý)
+   - Mở file DienLanhHuySon_TaoBang.sql : để tạo các bảng dữ liệu.
+   - Mở file DienLanhHuySon_DuLieu1.sql : để thêm 1 số dữ liệu mẫu nhỏ.
+   - Mở file DienLanhHuySon_DULieu2.sql : để thêm và chỉnh sửa toàn bộ dữ liệu.
+4. Mở file script SQL khởi tạo CSDL **`DienLanhHuySon`** và nhấn **Execute (`F5`)** để tạo 17 bảng cùng dữ liệu mẫu.
+5. Kiểm tra chuỗi kết nối trong file `appsettings.json`:
    ```json
    "ConnectionStrings": {
      "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=DienLanhHuySon;Trusted_Connection=True;TrustServerCertificate=True;"
