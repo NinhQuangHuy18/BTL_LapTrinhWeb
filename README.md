@@ -99,7 +99,7 @@ BTL_LapTrinhWeb/
 
 ### Bước 1: Clone dự án về máy
 ```bash
-git clone [https://github.com/](https://github.com/)<username>/<repository-name>.git
+git clone [[https://github.com/](https://github.com/)<username>/<repository-name>.git](https://github.com/NinhQuangHuy18/BTL_LapTrinhWeb)
 cd BTL_LapTrinhWeb
 ```
 
@@ -142,4 +142,4 @@ Sau khi chạy script CSDL mẫu, bạn có thể đăng nhập để kiểm th�
 
 ## 📞 Thông Tin Liên Hệ Bài Tập Lớn
 * **Sinh Viên: Ninh Quang Huy - 0325532335
-* **Sinh Viên: Bùi Bảo Sơn - 
+* **Sinh Viên: Bùi Bảo Sơn - 241224489
